@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: lotto
+  datasource:
+    # 로또 테이블은 stock_trading_db 안의 lotto 스키마에만 만든다.
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:stock_trading_db}?currentSchema=${DB_SCHEMA:lotto}
+    username: ${DB_USERNAME:stock_user}
+    password: ${DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        default_schema: ${DB_SCHEMA:lotto}
+        jdbc:
+          batch_size: 50
+
+lotto:
+  sync:
+    # 앱 시작 시와 매주 토요일 추첨 후 당첨번호를 자동으로 수집한다.
+    enabled: true
+    base-url: https://www.dhlottery.co.kr
+    request-delay-ms: 300
