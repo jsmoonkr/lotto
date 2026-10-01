@@ -37,7 +37,7 @@ public class RecommendService {
     }
 
     @Transactional
-    public List<RecommendationView> recommend(Strategy strategy, int count) {
+    public List<RecommendationView> recommend(Long userId, Strategy strategy, int count) {
         FrequencyStats stats = statsService.frequency(null);
         int targetDrawNo = stats.latestDrawNo() + 1;
 
@@ -50,14 +50,14 @@ public class RecommendService {
                 case FREQUENCY -> picker.weighted(weights(stats, s -> s.count() + 1.0));
                 case OVERDUE -> picker.weighted(weights(stats, s -> s.gap() + 1.0));
             };
-            saved.add(recommendationRepository.save(new Recommendation(strategy, targetDrawNo, numbers)));
+            saved.add(recommendationRepository.save(new Recommendation(userId, strategy, targetDrawNo, numbers)));
         }
         return saved.stream().map(r -> RecommendationView.of(r, null)).toList();
     }
 
     @Transactional(readOnly = true)
-    public Page<RecommendationView> history(int page, int size) {
-        Page<Recommendation> recs = recommendationRepository.findAll(
+    public Page<RecommendationView> history(Long userId, int page, int size) {
+        Page<Recommendation> recs = recommendationRepository.findByUserId(userId,
                 PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
         List<Integer> targets = recs.stream().map(Recommendation::getTargetDrawNo).distinct().toList();
         Map<Integer, LottoDraw> draws = drawRepository.findByDrawNoIn(targets).stream()

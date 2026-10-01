@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { api, errorMessage, won } from '@/api'
+import { isMenuAdmin } from '@/auth'
 import DrawBalls from '@/components/DrawBalls.vue'
 
 const page = ref(null)
@@ -58,7 +59,7 @@ onMounted(() => load(0))
         <input v-model="search" type="number" min="1" placeholder="회차 번호" aria-label="회차 번호" />
         <button class="btn">찾기</button>
       </form>
-      <button class="btn" :disabled="syncing" @click="sync">{{ syncing ? '가져오는 중…' : '최신 회차 가져오기' }}</button>
+      <button v-if="isMenuAdmin('DRAWS')" class="btn" :disabled="syncing" @click="sync">{{ syncing ? '가져오는 중…' : '최신 회차 가져오기' }}</button>
     </div>
     <p v-if="syncMessage" class="muted">{{ syncMessage }}</p>
     <p v-if="error" class="error">{{ error }}</p>

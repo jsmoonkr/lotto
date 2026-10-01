@@ -32,7 +32,6 @@ defineProps({
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
 }
 .plus {
   color: var(--muted);

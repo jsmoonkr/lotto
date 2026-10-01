@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "recommendation", indexes = @Index(columnList = "targetDrawNo"))
+@Table(name = "recommendation", indexes = {@Index(columnList = "targetDrawNo"), @Index(columnList = "userId")})
 public class Recommendation {
 
     @Id
@@ -31,6 +31,10 @@ public class Recommendation {
     /** 이 추천이 겨냥한 회차 (추천 시점의 최신 회차 + 1) */
     private int targetDrawNo;
 
+    /** 추천받은 사용자. 기록은 본인 것만 보인다. */
+    @Column(nullable = false)
+    private Long userId;
+
     private int n1;
     private int n2;
     private int n3;
@@ -41,7 +45,8 @@ public class Recommendation {
     protected Recommendation() {
     }
 
-    public Recommendation(Strategy strategy, int targetDrawNo, List<Integer> numbers) {
+    public Recommendation(Long userId, Strategy strategy, int targetDrawNo, List<Integer> numbers) {
+        this.userId = userId;
         this.createdAt = LocalDateTime.now();
         this.strategy = strategy;
         this.targetDrawNo = targetDrawNo;

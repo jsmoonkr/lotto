@@ -1,3 +1,7 @@
+# ENC(...) 값은 jasypt로 암호화한 비밀값이다.
+# 복호화 키(마스터 비밀번호)는 이 파일에 두지 않는다. 다음 중 하나로 넣는다.
+#   - 환경변수 JASYPT_ENCRYPTOR_PASSWORD (운영 권장)
+#   - backend/config/application.yml 의 jasypt.encryptor.password (로컬 전용, git 제외)
 spring:
   application:
     name: lotto
@@ -5,7 +9,7 @@ spring:
     # 로또 테이블은 stock_trading_db 안의 lotto 스키마에만 만든다.
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:stock_trading_db}?currentSchema=${DB_SCHEMA:lotto}
     username: ${DB_USERNAME:stock_user}
-    password: ${DB_PASSWORD:}
+    password: ${DB_PASSWORD:ENC(Hpw17H6Fw11scM8IR2ZCY1KSAoepySishO297F0XPsYx0nMryub8YJE7lHXzRrRE)}
   jpa:
     open-in-view: false
     hibernate:
@@ -16,9 +20,33 @@ spring:
         jdbc:
           batch_size: 50
 
+logging:
+  charset:
+    # Windows 기본 인코딩(CP949) 대신 UTF-8로 로그를 남긴다.
+    console: UTF-8
+    file: UTF-8
+
 lotto:
   sync:
     # 앱 시작 시와 매주 토요일 추첨 후 당첨번호를 자동으로 수집한다.
     enabled: true
     base-url: https://www.dhlottery.co.kr
     request-delay-ms: 300
+  security:
+    # 개인정보(이름, 이메일, 휴대폰) 암호화용 AES-256 키와 이메일 검색용 HMAC 키 (Base64 32바이트)
+    aes-key: ENC(KrB6Sly07oE1P88zbi6/OLiFHgL+/F/9oczhRaCcMuyEo1L6Iz0Uhi8cqGveEETMAQkTqrKSiOk1WbQTvXS3fh5Tt8Bv59xUPIEHWn3YBTM=)
+    hmac-key: ENC(wjXrzhi+Bcds5BkZUelhObjgJ5vq2CnrxLeEKkHO6ZOPQq5XD85S9PcPLmDCV992ImMchoTkjyfhJe/ahQii5zHUhs04OC+EQ5QwpNgOA8Q=)
+    # JWT(HS256) 서명 키 (Base64, 32바이트 이상)
+    jwt-secret: ENC(00XLF2ClRGhj+Z2K8phvL0eVSB5CPbte7IOnG8BEkPxvJoWyYMCvtmME5VTdkUdoNvyoIfHez3Vrwgt5IROtX0uqxtxaNhSwdlZCTD326V5g88OipJZ7e+xgLoiDKMamakUnD0hS4DNSRPQUH25xTQ==)
+    access-token-ttl: 15m
+    refresh-token-ttl: 14d
+    # 로그인 실패가 이 횟수에 이르면 lock-duration 동안 잠근다.
+    max-failed-logins: 5
+    lock-duration: 15m
+    # 리프레시 토큰 쿠키의 Secure 속성. HTTPS로 서비스할 때는 true로 바꾼다.
+    secure-cookie: false
+  admin:
+    # SYSTEM_ADMIN이 한 명도 없으면 앱 시작 시 이 계정을 만든다. 첫 로그인 후 비밀번호를 바꾸는 것을 권장한다.
+    login-id: admin
+    name: 시스템 관리자
+    initial-password: ENC(QOCxypyjbqJ9Pl7PZE/TOvfPvDT1qDl1mKi2n8/Et6qwdWtBtNY47effWeX21RR1hJDO1mApN5ab+iud2+PeQg==)

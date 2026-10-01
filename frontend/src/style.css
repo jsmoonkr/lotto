@@ -113,7 +113,84 @@ th {
   white-space: nowrap;
 }
 
+/* 로그인, 회원가입 */
+.auth-page {
+  min-height: calc(100vh - 48px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.auth-card h1 {
+  font-size: 24px;
+}
+.auth-card > .muted {
+  margin: -8px 0 0;
+}
+form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+form label input {
+  font-weight: 400;
+}
+.hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.notice {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  font-size: 14px;
+}
+.btn.full {
+  width: 100%;
+  padding: 10px;
+}
+.center {
+  text-align: center;
+  margin: 0;
+  font-size: 14px;
+}
+.error {
+  margin: 0;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--border);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.badge.accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.badge.danger {
+  background: color-mix(in srgb, var(--danger) 15%, transparent);
+  color: var(--danger);
+}
+
 /* 표 안의 공은 줄바꿈하지 않고, 좁은 화면에서는 보조 열을 숨긴다. */
+.balls {
+  flex-wrap: wrap;
+}
 td .balls {
   flex-wrap: nowrap;
 }

@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,14 +31,16 @@ public class RecommendationController {
     }
 
     @PostMapping
-    public List<RecommendationView> recommend(@Valid @RequestBody RecommendRequest request) {
-        return recommendService.recommend(request.strategy(), request.count());
+    public List<RecommendationView> recommend(@AuthenticationPrincipal Jwt jwt,
+                                              @Valid @RequestBody RecommendRequest request) {
+        return recommendService.recommend(Long.valueOf(jwt.getSubject()), request.strategy(), request.count());
     }
 
     @GetMapping
-    public PageResponse<RecommendationView> history(@RequestParam(defaultValue = "0") @Min(0) int page,
+    public PageResponse<RecommendationView> history(@AuthenticationPrincipal Jwt jwt,
+                                                    @RequestParam(defaultValue = "0") @Min(0) int page,
                                                     @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
-        return PageResponse.of(recommendService.history(page, size));
+        return PageResponse.of(recommendService.history(Long.valueOf(jwt.getSubject()), page, size));
     }
 
     public record RecommendRequest(@NotNull Strategy strategy, @Min(1) @Max(5) int count) {
